@@ -61,15 +61,21 @@
             android:layout_width="185dp"
             android:layout_height="278dp" />
 
-        <TextView
-            android:id="@+id/tv_display_plot_synopsis"
+        <ScrollView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@id/title_banner"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
-            android:layout_below="@id/title_banner"
-            android:paddingLeft="191dp"
-            android:textAppearance="?android:attr/textAppearanceMedium"  />
+            android:paddingLeft="191dp">
+            <TextView
+                android:id="@+id/tv_display_plot_synopsis"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/title_banner"
+                android:paddingBottom="10dp"
+                android:textAppearance="?android:attr/textAppearanceMedium"  />
+        </ScrollView>
     </RelativeLayout>
 
 </FrameLayout>
