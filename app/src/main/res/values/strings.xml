@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="http://schemas.android.com/apk/res-auto">
+    <string name="app_name">Popular Movies</string>
+
+    <string name="action_map">Map Location</string>
+    <string name="action_share">Share</string>
+    <string name="action_refresh">Reload</string>
+
+    <string name="error_message">
+        An error has occurred. Please try reloading.
+    </string>
+    <string name="movie_subtitle_spacer"> - </string>
+    <string name="action_sort_title">Sort by...</string>
+    <string name="active_popular">Showing most popular</string>
+    <string name="active_top_rated">Showing highest rated</string>
+    <string name="pref_active_sort">pref_active_sort</string>
+    <string name="label_sort_top_rated">Highest rated</string>
+    <string name="label_sort_popular">Most popular</string>
+</resources>
