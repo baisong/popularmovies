@@ -19,6 +19,7 @@
     <string name="reviews_heading">REVIEWS</string>
     <string name="active_popular">SHOWING MOST POPULAR</string>
     <string name="active_top_rated">SHOWING HIGHEST RATED</string>
+    <string name="active_favorites">SHOWING FAVORITES</string>
 
     <string name="error_message_trailers">
         Trouble loading trailers. Please check back later.

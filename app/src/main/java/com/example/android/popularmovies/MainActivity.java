@@ -100,7 +100,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
     private void updateSort() {
         String[] labels = {
                 getString(R.string.active_popular),
-                getString(R.string.active_top_rated)
+                getString(R.string.active_top_rated),
+                getString(R.string.active_favorites)
         };
         int sort = getSort(this);
         if (sort == 0 || sort == 1) {

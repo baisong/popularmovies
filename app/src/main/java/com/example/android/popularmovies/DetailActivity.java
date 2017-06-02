@@ -2,6 +2,7 @@ package com.example.android.popularmovies;
 
 import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -19,6 +20,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.android.popularmovies.data.FavoriteContract;
+import com.example.android.popularmovies.data.FavoriteDbHelper;
 import com.example.android.popularmovies.tools.TMDBUtils;
 import com.squareup.picasso.Picasso;
 
@@ -29,6 +32,8 @@ import java.util.Date;
 
 public class DetailActivity extends AppCompatActivity implements TrailerAdapter.TrailerOnClickHandler {
 
+    private static final String ACTION_ADD_FAVORITE = "add_favorite";
+    private static final String ACTION_REMOVE_FAVORITE = "remove_favorite";
     private String mDataJsonString;
     private ContentValues mMovieData;
     private boolean isFavorite;
@@ -41,6 +46,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     private Button mFavoriteBadge;
 
     private int mMovieId;
+    private int mFavoriteId;
     private String mTitle;
     private String mReleaseDate;
     private String mMoviePoster;
@@ -60,7 +66,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
-        isFavorite = false;
+
         mTitleDisplay = (TextView) findViewById(R.id.tv_display_title);
         mReleaseDisplay = (TextView) findViewById(R.id.tv_display_release_date);
         mPosterDisplay = (ImageView) findViewById(R.id.iv_display_movie_poster);
@@ -68,6 +74,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         mPlotDisplay = (TextView) findViewById(R.id.tv_movie_synopsis);
         mToggleFavorite = (Button) findViewById(R.id.btn_add_favorite);
         mFavoriteBadge = (Button) findViewById(R.id.badge_favorite);
+
         Intent launchIntent = getIntent();
         if (launchIntent != null) {
             if (launchIntent.hasExtra(Intent.EXTRA_TEXT)) {
@@ -78,6 +85,31 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
                 Picasso.with(getApplicationContext()).load(mMoviePoster).into(mPosterDisplay);
                 mVoteDisplay.setText(getFormattedVote());
                 mPlotDisplay.setText(mPlotSynopsis);
+
+                isFavorite = false;
+                mFavoriteId = 0;
+                Cursor cursor = getContentResolver().query(
+                        FavoriteContract.FavoriteEntry.CONTENT_URI,
+                        new String[]{FavoriteContract.FavoriteEntry.COLUMN_ID},
+                        FavoriteContract.FavoriteEntry.COLUMN_TMDB_ID + "=?",
+                        new String[]{String.valueOf(mMovieId)},
+                        FavoriteContract.FavoriteEntry.COLUMN_CREATED_TIMESTAMP + " DESC"
+                );
+                if (cursor != null) {
+                    if (cursor.getCount() == 1) {
+                        cursor.moveToFirst();
+                        isFavorite = true;
+                        mFavoriteId = cursor.getInt(cursor.getColumnIndex(FavoriteContract.FavoriteEntry.COLUMN_ID));
+                        displayToast("Favorite ID: " + mFavoriteId);
+                    }
+                    else {
+                        displayToast("Cursor count: " + cursor.getCount());
+                    }
+                }
+                else {
+                    displayToast("Cursor is null.");
+                }
+                refreshFavoriteActions();
             }
         }
 
@@ -188,7 +220,6 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
             if (mDetailsUrl == null) {
                 return null;
             }
-            //URL movieQueryUrl = TMDBUtils.buildUrl(params[0]);
             Log.d("popmovies_Details_URL", mDetailsUrl.toString());
             try {
                 return TMDBUtils.getResponseFromHttpUrl(mDetailsUrl);
@@ -303,34 +334,48 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     }
 
     public void toggleFavorite(View view) {
-        // Determine which is the new status
-        String message = (isFavorite) ? "Removed from favorites" : "Added to favorites!";
-        // Update the UI
-        updateFavorite(!isFavorite);
-        // Set the new value
-        isFavorite = (!isFavorite);
-        // Notify the user
-        Toast toast = Toast.makeText(getApplicationContext(), message,
-                Toast.LENGTH_SHORT);
+        String action = (isFavorite) ? ACTION_REMOVE_FAVORITE : ACTION_ADD_FAVORITE;
+        String toastMessage = "";
+        if (action.equals(ACTION_ADD_FAVORITE)) {
+            isFavorite = true;
+            toastMessage = "Added to favorites!";
+            Uri uri = getContentResolver().insert(
+                    FavoriteContract.FavoriteEntry.CONTENT_URI,
+                    FavoriteDbHelper.prepareFavoriteFromJson(mDataJsonString));
+        }
+        else if (action.equals(ACTION_REMOVE_FAVORITE)) {
+            toastMessage = "An error occurred.";
+            Uri contentUri = FavoriteContract.FavoriteEntry.CONTENT_URI.buildUpon()
+                    .appendPath(String.valueOf(mFavoriteId))
+                    .build();
+            Log.d("PopularMovies", contentUri.toString());
+            int itemsDeleted = getContentResolver().delete(contentUri, null, null);
+            if (itemsDeleted == 1) {
+                isFavorite = false;
+                toastMessage = "Removed from favorites";
+            }
+        }
+
+        refreshFavoriteActions();
+        displayToast(toastMessage);
+    }
+
+    private void displayToast(String toastMessage) {
+        Toast toast = Toast.makeText(getApplicationContext(), toastMessage, Toast.LENGTH_SHORT);
         toast.setGravity(Gravity.TOP | Gravity.CENTER, 0, 16);
         toast.show();
     }
 
-    private void updateFavorite(boolean becomingFavorite) {
+    private void refreshFavoriteActions() {
         String btnText = "Add to favorites";
         int iconId = R.drawable.ic_not_favorite_24dp;
         int colorId = R.color.accent_body;
         int badgeVisibility = View.GONE;
-        if (becomingFavorite) {
+        if (isFavorite) {
             btnText = "Remove";
             iconId = R.drawable.ic_remove_24dp;
             badgeVisibility = View.VISIBLE;
         }
-        /**
-         * android:drawableStart="@drawable/ic_not_favorite_24dp"
-         android:drawableLeft="@drawable/ic_not_favorite_24dp"
-         android:drawablePadding="12dip"
-         */
         mToggleFavorite.setCompoundDrawablesWithIntrinsicBounds(iconId, 0, 0, 0);
         mToggleFavorite.setTextColor(ContextCompat.getColor(this, colorId));
         mToggleFavorite.setText(btnText);
