@@ -22,7 +22,7 @@
         android:id="@+id/iv_tile_poster"
         android:layout_width="185dp"
         android:layout_height="278dp"
-        android:padding="16dp"/>
+        android:padding="0dp"/>
     <!--
     <TextView
         android:id="@+id/tv_tile_title"

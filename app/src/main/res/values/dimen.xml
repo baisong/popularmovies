@@ -1,5 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="item_review_horizontal_margin">16dp</dimen>
-    <dimen name="item_review_vertical_margin">@dimen/item_review_horizontal_margin</dimen>
+    <dimen name="item_trailer_left_margin">24dp</dimen>
+    <dimen name="item_trailer_right_margin">24dp</dimen>
+    <dimen name="item_trailer_title_left_margin">24dp</dimen>
+    <dimen name="item_trailer_title_right_margin">24dp</dimen>
+    <dimen name="item_trailer_title_vertical_margin">@dimen/item_trailer_title_left_margin</dimen>
+
+    <dimen name="item_review_divider_horizontal_margin">16dp</dimen>
+    <dimen name="item_review_text_left_margin">16dp</dimen>
+    <dimen name="item_review_text_right_margin">16dp</dimen>
+    <dimen name="item_author_vertical_margin">24dp</dimen>
+    <dimen name="item_author_right_margin">16dp</dimen>
+    <dimen name="item_author_left_margin">16dp</dimen>
+    <dimen name="movie_details_message_vertical_margin">40dp</dimen>
 </resources>

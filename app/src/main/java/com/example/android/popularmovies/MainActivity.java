@@ -18,7 +18,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.android.popularmovies.MovieAdapter.MovieAdapterOnClickHandler;
-import com.example.android.popularmovies.tools.MovieShelf;
+import com.example.android.popularmovies.data.MovieShelf;
 import com.example.android.popularmovies.tools.TMDBUtils;
 
 import org.json.JSONObject;
@@ -27,6 +27,7 @@ import java.net.URL;
 
 public class MainActivity extends AppCompatActivity implements MovieAdapterOnClickHandler {
 
+    private static final int MAIN_VIEW_GRID_COLUMNS = 2;
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
     private RecyclerView mRecyclerView;
     private MovieAdapter mMovieAdapter;
@@ -41,11 +42,13 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         mErrorMessageDisplay = (TextView) findViewById(R.id.tv_error_message_display);
         mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_loading_indicator);
         mActiveSort = (TextView) findViewById(R.id.tv_active_sort);
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_grid);
-        GridLayoutManager layoutManager = new GridLayoutManager(this, 2);
+
+        GridLayoutManager layoutManager = new GridLayoutManager(this, MAIN_VIEW_GRID_COLUMNS);
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
         mMovieAdapter = new MovieAdapter(this);

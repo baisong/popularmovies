@@ -1,4 +1,6 @@
-package com.example.android.popularmovies.tools;
+package com.example.android.popularmovies.data;
+
+import com.example.android.popularmovies.tools.TMDBUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -16,7 +18,7 @@ public class MovieShelf {
             for (int i = 0; i < movieListings.length(); i++) {
                 JSONObject obj = movieListings.getJSONObject(i);
                 this.movieData[i] = obj;
-                this.moviePosters[i] = buildPosterUrl(obj.getString(TMDBUtils.POSTER));
+                this.moviePosters[i] = buildPosterUrl(obj.getString(TMDBUtils.MOVIE_POSTER));
             }
         } catch (JSONException e) {
             e.printStackTrace();

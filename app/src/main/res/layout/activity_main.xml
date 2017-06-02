@@ -9,14 +9,17 @@
         <TextView
             android:id="@+id/tv_active_sort"
             android:visibility="invisible"
-            android:paddingTop="18dp"
-            android:paddingLeft="18dp"
+            android:background="@color/colorPrimaryDark"
+            android:textColor="@color/dark_primary_body"
+            android:padding="18dp"
+            style="@style/SmallLabel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerview_grid"
+            android:background="@color/dark_background"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/tv_active_sort" />

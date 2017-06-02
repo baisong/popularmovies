@@ -5,15 +5,40 @@
     <string name="action_map">Map Location</string>
     <string name="action_share">Share</string>
     <string name="action_refresh">Reload</string>
+    <string name="action_add_favorite">Add to favorites</string>
 
+    <string name="favorite_label">Saved as favorite</string>
+
+    <string name="movie_details_loading">Loading…</string>
     <string name="error_message">
         An error has occurred. Please try reloading.
     </string>
+
+    <string name="synopsis_heading">SYNOPSIS</string>
+    <string name="trailers_heading">TRAILERS</string>
+    <string name="reviews_heading">REVIEWS</string>
+    <string name="active_popular">SHOWING MOST POPULAR</string>
+    <string name="active_top_rated">SHOWING HIGHEST RATED</string>
+
+    <string name="error_message_trailers">
+        Trouble loading trailers. Please check back later.
+    </string>
+    <string name="error_message_reviews">
+        Trouble loading reviews. Please check back later.
+    </string>
+
+    <string name="empty_message_trailers">
+        No trailers for this movie.
+    </string>
+    <string name="empty_message_reviews">
+        No reviews for this movie.
+    </string>
+
     <string name="movie_subtitle_spacer"> - </string>
     <string name="action_sort_title">Sort by...</string>
-    <string name="active_popular">Showing most popular</string>
-    <string name="active_top_rated">Showing highest rated</string>
     <string name="pref_active_sort">pref_active_sort</string>
     <string name="label_sort_top_rated">Highest rated</string>
     <string name="label_sort_popular">Most popular</string>
+
+    <string name="a11y_movie_poster">Movie Poster</string>
 </resources>

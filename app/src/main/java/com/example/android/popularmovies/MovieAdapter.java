@@ -11,7 +11,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.example.android.popularmovies.tools.MovieShelf;
+import com.example.android.popularmovies.data.MovieShelf;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONObject;

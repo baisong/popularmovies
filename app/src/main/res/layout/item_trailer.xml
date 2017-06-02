@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/item_trailer_left_margin"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_play_circle_filled_24dp"/>
+        <TextView
+            android:id="@+id/tv_trailer_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            tools:text="Trailer Title"
+            android:text="TextView"
+            android:layout_marginLeft="@dimen/item_trailer_title_left_margin"
+            android:layout_marginRight="@dimen/item_trailer_title_right_margin"
+            android:layout_marginTop="@dimen/item_trailer_title_vertical_margin"
+            android:layout_marginBottom="@dimen/item_trailer_title_vertical_margin" />
+    </LinearLayout>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginLeft="@dimen/item_trailer_left_margin"
+        android:layout_marginRight="@dimen/item_trailer_right_margin"
+        android:background="@color/dark_background_body"/>
+</LinearLayout>

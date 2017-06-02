@@ -1,18 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<LinearLayout
+    android:orientation="vertical"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
+    android:layout_height="wrap_content">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="22dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="8dp"
+            android:src="@drawable/ic_chat_bubble_outline_24dp"/>
+    <TextView
+        android:id="@+id/tv_review_author"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        tools:text="Reviewer Name:"
+        android:text="TextView"
+        android:layout_marginLeft="@dimen/item_author_left_margin"
+        android:layout_marginRight="@dimen/item_author_right_margin"
+        android:layout_marginTop="@dimen/item_author_vertical_margin" />
+    </LinearLayout>
     <TextView
         android:id="@+id/tv_review_text"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        tools:text="This is where the review text content goes."
         android:text="TextView"
-        android:layout_marginLeft="@dimen/item_review_horizontal_margin"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="@dimen/item_review_vertical_margin" />
-</android.support.constraint.ConstraintLayout>
+        android:layout_marginLeft="@dimen/item_review_text_left_margin"
+        android:layout_marginRight="@dimen/item_review_text_right_margin"
+        android:layout_marginTop="0dp"
+        android:layout_marginBottom="16dp" />
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginLeft="@dimen/item_review_divider_horizontal_margin"
+        android:layout_marginRight="@dimen/item_review_divider_horizontal_margin"
+        android:background="@color/dark_background_body"/>
+</LinearLayout>
