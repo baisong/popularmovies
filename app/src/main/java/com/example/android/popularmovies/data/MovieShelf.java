@@ -8,16 +8,28 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+/**
+ * A simple POJO to hold an array of poster URLs and json data, for the MainActivity.
+ */
 public class MovieShelf {
 
     private static final String IMAGE_BASE_URL = "http://image.tmdb.org/t/p/w185/";
     public String[] moviePosters;
     public JSONObject[] movieData;
 
+    /**
+     * Returns the minimum length of both the poster and movieData arrays.
+     *
+     * Since we always use both pieces of data, we wouldn't want to return a length that creates
+     * an out of bounds error.
+     */
     public int getCount() {
         return moviePosters.length;
     }
 
+    /**
+     * Creates a shelf based on a JSONArray, currently invoked for "Most Popular" and "Top Rated".
+     */
     public MovieShelf(JSONArray movieListings) throws JSONException {
         int count = movieListings.length();
         this.moviePosters = new String[count];
@@ -33,6 +45,9 @@ public class MovieShelf {
         }
     }
 
+    /**
+     * Creates a shelf based on a Cursor from FavoriteContentProvider, for "Favorites" view mode.
+     */
     public MovieShelf(Cursor cursor) {
         int count = cursor.getCount();
         this.moviePosters = new String[count];
@@ -51,6 +66,9 @@ public class MovieShelf {
         }
     }
 
+    /**
+     * Creates a fully-qualified URL string for a poster image.
+     */
     private String buildPosterUrl(String posterPath) {
         return IMAGE_BASE_URL + posterPath;
     }

@@ -17,14 +17,23 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
 
     private ContentValues[] mReviews;
 
+    /**
+     * Creates a ReviewAdapter.
+     */
     public ReviewAdapter() {
         super();
     }
 
+    /**
+     * Cache of the children views for a item_review view.
+     */
     public class ReviewViewHolder extends RecyclerView.ViewHolder {
         public final TextView mAuthorName;
         public final TextView mReviewText;
 
+        /**
+         * Sets up the item view.
+         */
         public ReviewViewHolder(View view) {
             super(view);
             mReviewText = (TextView) view.findViewById(R.id.tv_review_text);
@@ -32,12 +41,18 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
         }
     }
 
+    /**
+     * Returns the number of items.
+     */
     @Override
     public int getItemCount() {
         if (mReviews == null) return 0;
         return mReviews.length;
     }
 
+    /**
+     * Initializes each visible view holder on the screen.
+     */
     @Override
     public ReviewViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
@@ -46,6 +61,9 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
         return new ReviewViewHolder(view);
     }
 
+    /**
+     * Displays the layout bound to each visible view.
+     */
     @Override
     public void onBindViewHolder(ReviewViewHolder holder, int position) {
         ContentValues review = mReviews[position];
@@ -53,6 +71,9 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
         holder.mAuthorName.setText(review.getAsString(TMDBUtils.REVIEW_AUTHOR));
     }
 
+    /**
+     * Refreshes the data held in the adapter.
+     */
     public void setMovieReviewsData(ContentValues[] reviews) {
         mReviews = reviews;
         notifyDataSetChanged();

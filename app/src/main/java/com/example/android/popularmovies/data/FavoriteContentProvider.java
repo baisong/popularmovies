@@ -27,6 +27,9 @@ public class FavoriteContentProvider extends ContentProvider {
     private static final String SINGLE_DELETE_WHERECLAUSE = "_id=?";
     private static final String PATH_SEGMENT_FAVORITE_WITH_ID = "/#";
 
+    /**
+     * Matches accepted content URIs
+     */
     public static UriMatcher buildUriMatcher() {
         UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
         uriMatcher.addURI(
@@ -41,12 +44,18 @@ public class FavoriteContentProvider extends ContentProvider {
         return uriMatcher;
     }
 
+    /**
+     * Sets up the custom content provider's database helper.
+     */
     @Override
     public boolean onCreate() {
         mFavoriteDbHelper = new FavoriteDbHelper(getContext());
         return true;
     }
 
+    /**
+     * Standard insert method, only accepts single inserts.
+     */
     @Override
     public Uri insert(@NonNull Uri uri, ContentValues values) {
         final SQLiteDatabase db = mFavoriteDbHelper.getWritableDatabase();
@@ -71,6 +80,9 @@ public class FavoriteContentProvider extends ContentProvider {
         return returnUri;
     }
 
+    /**
+     * Standard query method, only accepts bulk queries.
+     */
     @Override
     public Cursor query(@NonNull Uri uri, String[] projection, String selection,
                         String[] selectionArgs, String sortOrder) {
@@ -97,6 +109,9 @@ public class FavoriteContentProvider extends ContentProvider {
         return cursor;
     }
 
+    /**
+     * Standard delete method, only accepts single favorite record with ID.
+     */
     @Override
     public int delete(@NonNull Uri uri, String selection, String[] selectionArgs) {
         final SQLiteDatabase db = mFavoriteDbHelper.getWritableDatabase();
@@ -119,12 +134,18 @@ public class FavoriteContentProvider extends ContentProvider {
         return favoritesDeleted;
     }
 
+    /**
+     * Standard update method, unimplemented.
+     */
     @Override
     public int update(@NonNull Uri uri, ContentValues values, String selection,
                       String[] selectionArgs) {
         throw new UnsupportedOperationException(UPDATE_UNSUPPORTED_MESSAGE);
     }
 
+    /**
+     * Standard getType method, unimplemented.
+     */
     @Override
     public String getType(@NonNull Uri uri) {
         throw new UnsupportedOperationException(TYPE_UNSUPPORTED_MESSAGE);

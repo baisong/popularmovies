@@ -14,10 +14,16 @@ public class FavoriteDbHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "favorites.db";
     private static final int VERSION = 1;
 
+    /**
+     * Calls SQLiteOpenHelper constructor.
+     */
     FavoriteDbHelper(Context context) {
         super(context, DATABASE_NAME, null, VERSION);
     }
 
+    /**
+     * Executes the table creation SQL statement;
+     */
     @Override
     public void onCreate(SQLiteDatabase db) {
 
@@ -32,6 +38,9 @@ public class FavoriteDbHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE);
     }
 
+    /**
+     * Converts a themoviedb.com API JSON string into a ContentValues object to insert.
+     */
     public static ContentValues prepareFavoriteFromJson(String jsonString) {
         ContentValues parsedJson = TMDBUtils.getMovieItemData(jsonString);
         ContentValues favorite = new ContentValues();
@@ -42,6 +51,9 @@ public class FavoriteDbHelper extends SQLiteOpenHelper {
         return favorite;
     }
 
+    /**
+     * Drops any existing table on an upgrade.
+     */
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + FavoriteEntry.TABLE_NAME);

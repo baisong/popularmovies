@@ -27,24 +27,30 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerV
     }
 
     /**
-     * Creates a MovieAdapter.
+     * Creates a TrailerAdapter.
      */
     public TrailerAdapter(TrailerOnClickHandler clickHandler) {
         mClickHandler = clickHandler;
     }
 
     /**
-     * Cache of the children views for a menu_main list item.
+     * Cache of the children views for a item_trailer view.
      */
     public class TrailerViewHolder extends RecyclerView.ViewHolder implements OnClickListener {
         public final TextView mTrailerTitle;
 
+        /**
+         * Sets up the item view.
+         */
         public TrailerViewHolder(View view) {
             super(view);
             mTrailerTitle = (TextView) view.findViewById(R.id.tv_trailer_title);
             view.setOnClickListener(this);
         }
 
+        /**
+         * On click, passes the YouTube view URL string for the launch view intent.
+         */
         @Override
         public void onClick(View v) {
             ContentValues trailer = mTrailers[getAdapterPosition()];

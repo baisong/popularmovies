@@ -21,23 +21,38 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
     private MovieShelf mShelf;
     private final MovieAdapterOnClickHandler mClickHandler;
 
+    /**
+     * Provides an interface for onClickHandlers to pass along a JSONobject.
+     */
     public interface MovieAdapterOnClickHandler {
-        void onClick(JSONObject weatherForDay);
+        void onClick(JSONObject movieData);
     }
 
+    /**
+     * Requires that MovieAdapter instances provide a clickHandler.
+     */
     public MovieAdapter(MovieAdapterOnClickHandler clickHandler) {
         mClickHandler = clickHandler;
     }
 
+    /**
+     *  Describes a movie item view and it's metadata.
+     */
     public class MovieAdapterViewHolder extends RecyclerView.ViewHolder implements OnClickListener {
         public final ImageView mPosterImageView;
 
+        /**
+         * Sets up the poster ImageView and onClickHandler for launching the DetailActivity intent.
+         */
         public MovieAdapterViewHolder(View view) {
             super(view);
             mPosterImageView = (ImageView) view.findViewById(R.id.iv_tile_poster);
             view.setOnClickListener(this);
         }
 
+        /**
+         * Passes the specified movie's JSONobject of metadata to the onClickHandler.
+         */
         @Override
         public void onClick(View v) {
             int adapterPosition = getAdapterPosition();
@@ -46,6 +61,9 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         }
     }
 
+    /**
+     * Inflates the movie_tile view for each item.
+     */
     @Override
     public MovieAdapterViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         Context context = viewGroup.getContext();
@@ -56,18 +74,27 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         return new MovieAdapterViewHolder(view);
     }
 
+    /**
+     * Uses Picasso to load the poster into the item view.
+     */
     @Override
     public void onBindViewHolder(MovieAdapterViewHolder movieAdapterViewHolder, int position) {
         String posterImageUrl = mShelf.moviePosters[position];
         Picasso.with(movieAdapterViewHolder.mPosterImageView.getContext()).load(posterImageUrl).into(movieAdapterViewHolder.mPosterImageView);
     }
 
+    /**
+     * Returns the current item count.
+     */
     @Override
     public int getItemCount() {
         if (mShelf == null) return 0;
-        return mShelf.moviePosters.length;
+        return mShelf.getCount();
     }
 
+    /**
+     * Allows for new data to be loaded into the RecyclerView.
+     */
     public void setMovieData(MovieShelf shelf) {
         mShelf = shelf;
         notifyDataSetChanged();

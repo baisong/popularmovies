@@ -97,6 +97,9 @@ public final class TMDBUtils {
         return getUrl(builtUri);
     }
 
+    /**
+     * Converts a Uri to a URL object, encapsulates exception handling.
+     */
     private static URL getUrl(Uri uri) {
         URL url = null;
         try {
@@ -130,7 +133,7 @@ public final class TMDBUtils {
     }
 
     /**
-     * Returns an "MovieShelf": an array of poster URL strings, from a TMDB JSON response.
+     * Returns an "MovieShelf": an array of poster URL strings & the detail launch Intent extra.
      */
     public static MovieShelf getMovieTitlesFromJson(String jsonResponse) throws JSONException {
         JSONObject responseObj = new JSONObject(jsonResponse);
@@ -141,18 +144,34 @@ public final class TMDBUtils {
         return new MovieShelf(responseObj.getJSONArray(TMDB_RESULTS));
     }
 
+    /**
+     * Builds the URL to fetch a given movie's reviews.
+     */
     public static URL buildReviewsUrl(int movieId) {
         return getUrl(buildDetailsUri(movieId, API_MOVIE_REVIEWS_PATH));
     }
 
+    /**
+     * Builds the URL to fetch a given movie's trailers.
+     */
     public static URL buildTrailersUrl(int movieId) {
         return getUrl(buildDetailsUri(movieId, API_MOVIE_TRAILERS_PATH));
     }
 
+    /**
+     * Builds the URL to fetch a given movie.
+     *
+     * Currently used in the DetailActivity to refresh favorites after they are launched from the
+     * favorites view, since the JSON string used to launch favorites is stored in the database,
+     * and could be stale.
+     */
     public static URL buildMovieUrl(int movieId) {
         return getUrl(buildDetailsUri(movieId, EMPTY_PATH_SEGMENT));
     }
 
+    /**
+     * Wrapper function for all movie data Uri builders.
+     */
     private static Uri buildDetailsUri(int movieId, String detailsPath) {
         String tmdbApiKey = Constants.TMDB_API_KEY;
         String baseUrl = API_BASE_URL
@@ -167,6 +186,9 @@ public final class TMDBUtils {
                 .build();
     }
 
+    /**
+     * Convert an individual movie JSON string into ContentValues for the provider.
+     */
     @Nullable
     public static ContentValues getMovieItemData(String jsonString) {
         ContentValues item;
@@ -187,6 +209,9 @@ public final class TMDBUtils {
         }
     }
 
+    /**
+     * Parses a reviews URL response into an array of content values.
+     */
     public static ContentValues[] getReviewsData(String jsonString) {
         ContentValues[] items;
         JSONArray results;
@@ -208,6 +233,9 @@ public final class TMDBUtils {
         return items;
     }
 
+    /**
+     * Parses an individual review item into a ContentValues instance.
+     */
     private static ContentValues getReviewItemData(JSONObject json) {
         ContentValues item;
         try {
@@ -223,6 +251,9 @@ public final class TMDBUtils {
         }
     }
 
+    /**
+     * Parses a trailers URL response into an array of content values.
+     */
     public static ContentValues[] getTrailersData(String jsonString) {
         ContentValues[] items;
         JSONArray results;
@@ -244,6 +275,9 @@ public final class TMDBUtils {
         return items;
     }
 
+    /**
+     * Parses an individual trailer item into a ContentValues instance.
+     */
     private static ContentValues getTrailerItemData(JSONObject json) {
         ContentValues item;
         item = new ContentValues();
@@ -253,7 +287,9 @@ public final class TMDBUtils {
 
     }
 
-
+    /**
+     * Standardizes a pretty trailer title for display.
+     */
     private static String formatTrailerTitle(JSONObject json) {
         try {
             String name = json.getString(TRAILER_YOUTUBE_NAME);
@@ -267,7 +303,9 @@ public final class TMDBUtils {
         }
     }
 
-
+    /**
+     * Creates an intent-ready content URI to launch a YouTube trailer
+     */
     private static String formatTrailerContentUri(JSONObject json) {
         try {
             String source = json.getString(TRAILER_YOUTUBE_SOURCE);
@@ -279,6 +317,9 @@ public final class TMDBUtils {
         }
     }
 
+    /**
+     * Queries the FavoriteContentProvider and creates a MovieShelf for display in MainActivity.
+     */
     @Nullable
     public static MovieShelf buildFavoritesShelf(Context context) {
         String[] projection = new String[]{
@@ -301,6 +342,9 @@ public final class TMDBUtils {
         return shelf;
     }
 
+    /**
+     * Queries themoviedb.com API for the movies list of the specified sort.
+     */
     @Nullable
     public static MovieShelf buildSortedShelf(int viewMode) {
         URL movieQueryUrl = buildUrl(viewMode);

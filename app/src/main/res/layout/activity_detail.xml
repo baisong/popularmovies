@@ -203,7 +203,7 @@
             app:layout_constraintTop_toBottomOf="@+id/tv_trailers_heading"
             app:layout_constraintLeft_toLeftOf="@+id/tv_trailers_heading"
             android:id="@+id/rv_trailers"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content">
         </android.support.v7.widget.RecyclerView>
         <TextView
@@ -242,7 +242,7 @@
             app:layout_constraintTop_toBottomOf="@+id/tv_reviews_heading"
             app:layout_constraintLeft_toLeftOf="@+id/tv_reviews_heading"
             android:id="@+id/rv_reviews"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingBottom="16dp">
         </android.support.v7.widget.RecyclerView>

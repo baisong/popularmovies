@@ -8,7 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <TextView
-            android:id="@+id/tv_active_sort"
+            android:id="@+id/tv_active_view_mode"
             android:visibility="invisible"
             android:background="@color/colorPrimaryDark"
             android:textColor="@color/dark_primary_body"
@@ -21,7 +21,7 @@
             android:id="@+id/recyclerview_grid"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/tv_active_sort" />
+            android:layout_below="@id/tv_active_view_mode" />
         <TextView
             android:id="@+id/tv_error_message_display"
             android:layout_width="wrap_content"

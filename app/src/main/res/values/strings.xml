@@ -38,8 +38,8 @@
     <string name="empty_message_reviews">No reviews for this movie.</string>
     <string name="empty_favorites_title">No favorites.</string>
     <string name="empty_favorites_btn_text_popular">Browse Most Popular</string>
-    <string name="empty_favorites_btn_text_top_rated">Browse Top Rated</string>
+    <string name="empty_favorites_btn_text_top_rated">Browse Highest Rated</string>
 
     <string name="movie_subtitle_spacer"> - </string>
-    <string name="pref_active_sort">pref_active_sort</string>
+    <string name="pref_active_view_mode">pref_active_view_mode</string>
 </resources>
