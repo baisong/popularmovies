@@ -1,11 +1,14 @@
 package com.example.android.popularmovies.tools;
 
 import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.example.android.popularmovies.data.Constants;
+import com.example.android.popularmovies.data.FavoriteContract;
 import com.example.android.popularmovies.data.MovieShelf;
 
 import org.json.JSONArray;
@@ -24,8 +27,10 @@ import java.util.Scanner;
  */
 public final class TMDBUtils {
 
-    public static final int SORT_POPULAR = 0;
-    public static final int SORT_TOP_RATED = 1;
+    public static final int MODE_SORT_POPULAR = 0;
+    public static final int MODE_SORT_TOP_RATED = 1;
+    public static final int MODE_LIST_FAVORITES = 2;
+
     private static final String LOG_TAG = TMDBUtils.class.getSimpleName();
 
     public static final String MOVIE_ID = "id";
@@ -59,23 +64,29 @@ public final class TMDBUtils {
     private static final String API_MOVIE_DETAILS_PATH = "/movie/";
     private static final String API_MOVIE_REVIEWS_PATH = "/reviews";
     private static final String API_MOVIE_TRAILERS_PATH = "/trailers";
+    private static final String URL_SEPARATOR = "/";
 
     private static final String YOUTUBE_BASE_URL = "http://www.youtube.com/watch?v=";
     private static final String IMAGE_BASE_URL = "http://image.tmdb.org/t/p/w185/";
+    private static final String EMPTY_PATH_SEGMENT = "";
+    private static final String REVIEWS_RESULTS_ARRAY_NAME = "results";
+    private static final String TRAILERS_RESULTS_ARRAY_NAME = "youtube";
+    private static final String TRAILER_TITLE_FORMAT = "%s: %s (%s)";
+    private static final java.lang.String LIST_FAVORITES_SORT_ORDER =
+            FavoriteContract.FavoriteEntry.COLUMN_CREATED_TIMESTAMP + " DESC";
 
     /**
      * Builds the URL for querying movies using the specified sort method.
      */
     public static URL buildUrl(int sortMethod) {
-        Log.d("Popular_Movies_URL:", String.valueOf(sortMethod));
         // Default to popular, even if we have an invalid sortMethod
         // After all, the app is named "Popular Movies"
         String path = API_POPULAR_PATH;
-        if (sortMethod == SORT_TOP_RATED) {
+        if (sortMethod == MODE_SORT_TOP_RATED) {
             path = API_TOP_RATED_PATH;
         }
         String baseUrl = API_BASE_URL
-                        + "/"
+                        + URL_SEPARATOR
                         + String.valueOf(API_VERSION)
                         + path;
         String tmdbApiKey = Constants.TMDB_API_KEY;
@@ -83,17 +94,16 @@ public final class TMDBUtils {
                 .appendQueryParameter(API_KEY_PARAM, tmdbApiKey)
                 .appendQueryParameter(LANG_PARAM, DEFAULT_LANG)
                 .build();
-        return sendSafeUrl(builtUri);
+        return getUrl(builtUri);
     }
 
-    private static URL sendSafeUrl(Uri uri) {
+    private static URL getUrl(Uri uri) {
         URL url = null;
         try {
             url = new URL(uri.toString());
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
-        // Log.v(LOG_TAG, "Built URI " + url);
         return url;
     }
 
@@ -132,17 +142,21 @@ public final class TMDBUtils {
     }
 
     public static URL buildReviewsUrl(int movieId) {
-        return sendSafeUrl(buildDetailsUri(movieId, API_MOVIE_REVIEWS_PATH));
+        return getUrl(buildDetailsUri(movieId, API_MOVIE_REVIEWS_PATH));
     }
 
     public static URL buildTrailersUrl(int movieId) {
-        return sendSafeUrl(buildDetailsUri(movieId, API_MOVIE_TRAILERS_PATH));
+        return getUrl(buildDetailsUri(movieId, API_MOVIE_TRAILERS_PATH));
+    }
+
+    public static URL buildMovieUrl(int movieId) {
+        return getUrl(buildDetailsUri(movieId, EMPTY_PATH_SEGMENT));
     }
 
     private static Uri buildDetailsUri(int movieId, String detailsPath) {
         String tmdbApiKey = Constants.TMDB_API_KEY;
         String baseUrl = API_BASE_URL
-                + "/"
+                + URL_SEPARATOR
                 + String.valueOf(API_VERSION)
                 + API_MOVIE_DETAILS_PATH
                 + String.valueOf(movieId)
@@ -178,7 +192,7 @@ public final class TMDBUtils {
         JSONArray results;
         try {
             JSONObject json = new JSONObject(jsonString);
-            results = json.getJSONArray("results");
+            results = json.getJSONArray(REVIEWS_RESULTS_ARRAY_NAME);
             items = new ContentValues[results.length()];
             if (results.length() > 0) {
                 for (int i = 0; i < results.length(); i++) {
@@ -214,7 +228,7 @@ public final class TMDBUtils {
         JSONArray results;
         try {
             JSONObject json = new JSONObject(jsonString);
-            results = json.getJSONArray("youtube");
+            results = json.getJSONArray(TRAILERS_RESULTS_ARRAY_NAME);
             items = new ContentValues[results.length()];
             if (results.length() > 0) {
                 for (int i = 0; i < results.length(); i++) {
@@ -245,7 +259,7 @@ public final class TMDBUtils {
             String name = json.getString(TRAILER_YOUTUBE_NAME);
             String size = json.getString(TRAILER_YOUTUBE_SIZE);
             String type = json.getString(TRAILER_YOUTUBE_TYPE);
-            return String.format("%s: %s (%s)", type, name, size);
+            return String.format(TRAILER_TITLE_FORMAT, type, name, size);
         }
         catch (JSONException e) {
             e.printStackTrace();
@@ -260,6 +274,41 @@ public final class TMDBUtils {
             return YOUTUBE_BASE_URL + source;
         }
         catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Nullable
+    public static MovieShelf buildFavoritesShelf(Context context) {
+        String[] projection = new String[]{
+                FavoriteContract.FavoriteEntry.COLUMN_ID,
+                FavoriteContract.FavoriteEntry.COLUMN_TMDB_POSTER_URL,
+                FavoriteContract.FavoriteEntry.COLUMN_TMDB_CACHED_DATA,
+        };
+        Cursor cursor = context.getContentResolver().query(
+                FavoriteContract.FavoriteEntry.CONTENT_URI,
+                projection,
+                null,
+                null,
+                LIST_FAVORITES_SORT_ORDER
+        );
+        if (cursor == null) {
+            return null;
+        }
+        MovieShelf shelf = new MovieShelf(cursor);
+        cursor.close();
+        return shelf;
+    }
+
+    @Nullable
+    public static MovieShelf buildSortedShelf(int viewMode) {
+        URL movieQueryUrl = buildUrl(viewMode);
+        Log.d(LOG_TAG, movieQueryUrl.toString());
+        try {
+            String json = getResponseFromHttpUrl(movieQueryUrl);
+            return getMovieTitlesFromJson(json);
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }

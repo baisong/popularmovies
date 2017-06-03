@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:xliff="http://schemas.android.com/apk/res-auto">
+<resources>
     <string name="app_name">Popular Movies</string>
 
-    <string name="action_map">Map Location</string>
+    <string name="action_sort_title">Sort by...</string>
     <string name="action_share">Share</string>
     <string name="action_refresh">Reload</string>
     <string name="action_add_favorite">Add to favorites</string>
-
+    <string name="action_label_add_favorite">Add to favorites</string>
+    <string name="action_label_remove_favorite">Remove</string>
+    <string name="share_movie_chooser_title">Share this movie</string>
+    <string name="label_sort_top_rated">Highest rated</string>
+    <string name="label_sort_popular">Most popular</string>
+    <string name="a11y_movie_poster">Movie Poster</string>
+    <string name="label_list_favorites">Favorites</string>
     <string name="favorite_label">Saved as favorite</string>
-
-    <string name="movie_details_loading">Loading…</string>
-    <string name="error_message">
-        An error has occurred. Please try reloading.
-    </string>
 
     <string name="synopsis_heading">SYNOPSIS</string>
     <string name="trailers_heading">TRAILERS</string>
@@ -21,25 +22,24 @@
     <string name="active_top_rated">SHOWING HIGHEST RATED</string>
     <string name="active_favorites">SHOWING FAVORITES</string>
 
-    <string name="error_message_trailers">
-        Trouble loading trailers. Please check back later.
-    </string>
-    <string name="error_message_reviews">
-        Trouble loading reviews. Please check back later.
-    </string>
+    <string name="fetch_movie_error_message">Unable to refresh movie.</string>
+    <string name="fetch_movie_success_new">Movie updated since you last viewed it.</string>
+    <string name="vote_average_suffix">/10</string>
+    <string name="movie_release_error_value">Unknown release date</string>
+    <string name="toast_toggle_favorite_fail">An error occurred.</string>
+    <string name="toast_message_add_favorite_success">Added to favorites!</string>
+    <string name="toast_message_remove_favorite_success">Removed from favorites.</string>
 
-    <string name="empty_message_trailers">
-        No trailers for this movie.
-    </string>
-    <string name="empty_message_reviews">
-        No reviews for this movie.
-    </string>
+    <string name="movie_details_loading">Loading…</string>
+    <string name="error_message">An error has occurred. Please try reloading.</string>
+    <string name="error_message_trailers">Trouble loading trailers. Please try later.</string>
+    <string name="error_message_reviews">Trouble loading reviews. Please try later.</string>
+    <string name="empty_message_trailers">No trailers for this movie.</string>
+    <string name="empty_message_reviews">No reviews for this movie.</string>
+    <string name="empty_favorites_title">No favorites.</string>
+    <string name="empty_favorites_btn_text_popular">Browse Most Popular</string>
+    <string name="empty_favorites_btn_text_top_rated">Browse Top Rated</string>
 
     <string name="movie_subtitle_spacer"> - </string>
-    <string name="action_sort_title">Sort by...</string>
     <string name="pref_active_sort">pref_active_sort</string>
-    <string name="label_sort_top_rated">Highest rated</string>
-    <string name="label_sort_popular">Most popular</string>
-
-    <string name="a11y_movie_poster">Movie Poster</string>
 </resources>

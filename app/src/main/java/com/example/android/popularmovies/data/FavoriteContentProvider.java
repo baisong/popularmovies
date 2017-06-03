@@ -18,10 +18,26 @@ public class FavoriteContentProvider extends ContentProvider {
     private static final UriMatcher sUriMatcher = buildUriMatcher();
     private FavoriteDbHelper mFavoriteDbHelper;
 
+    private static final String INSERT_FAIL_MESSAGE = "Failed to insert: ";
+    private static final String INSERT_EXCEPTION_MESSAGE = "Unknown uri: ";
+
+    private static final String UPDATE_UNSUPPORTED_MESSAGE = "This provider does not provide update operations.";
+    private static final String TYPE_UNSUPPORTED_MESSAGE = "This provider does not provide a type.";
+
+    private static final String SINGLE_DELETE_WHERECLAUSE = "_id=?";
+    private static final String PATH_SEGMENT_FAVORITE_WITH_ID = "/#";
+
     public static UriMatcher buildUriMatcher() {
         UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-        uriMatcher.addURI(FavoriteContract.AUTHORITY, FavoriteContract.PATH_FAVORITES, FAVORITES);
-        uriMatcher.addURI(FavoriteContract.AUTHORITY, FavoriteContract.PATH_FAVORITES + "/#", FAVORITE_WITH_ID);
+        uriMatcher.addURI(
+                FavoriteContract.AUTHORITY,
+                FavoriteContract.PATH_FAVORITES,
+                FAVORITES
+        );
+        uriMatcher.addURI(
+                FavoriteContract.AUTHORITY,
+                FavoriteContract.PATH_FAVORITES + PATH_SEGMENT_FAVORITE_WITH_ID,
+                FAVORITE_WITH_ID);
         return uriMatcher;
     }
 
@@ -43,11 +59,11 @@ public class FavoriteContentProvider extends ContentProvider {
                 if ( id > 0 ) {
                     returnUri = ContentUris.withAppendedId(FavoriteContract.FavoriteEntry.CONTENT_URI, id);
                 } else {
-                    throw new android.database.SQLException("Failed to insert: " + uri);
+                    throw new android.database.SQLException(INSERT_FAIL_MESSAGE + uri);
                 }
                 break;
             default:
-                throw new UnsupportedOperationException("Unknown uri: " + uri);
+                throw new UnsupportedOperationException(INSERT_EXCEPTION_MESSAGE + uri);
         }
 
         getContext().getContentResolver().notifyChange(uri, null);
@@ -60,11 +76,11 @@ public class FavoriteContentProvider extends ContentProvider {
                         String[] selectionArgs, String sortOrder) {
         final SQLiteDatabase db = mFavoriteDbHelper.getReadableDatabase();
         int match = sUriMatcher.match(uri);
-        Cursor retCursor;
+        Cursor cursor;
 
         switch (match) {
             case FAVORITES:
-                retCursor =  db.query(TABLE_NAME,
+                cursor =  db.query(TABLE_NAME,
                         projection,
                         selection,
                         selectionArgs,
@@ -73,12 +89,12 @@ public class FavoriteContentProvider extends ContentProvider {
                         sortOrder);
                 break;
             default:
-                throw new UnsupportedOperationException("Unknown uri: " + uri);
+                throw new UnsupportedOperationException(INSERT_EXCEPTION_MESSAGE + uri);
         }
 
-        retCursor.setNotificationUri(getContext().getContentResolver(), uri);
+        cursor.setNotificationUri(getContext().getContentResolver(), uri);
 
-        return retCursor;
+        return cursor;
     }
 
     @Override
@@ -90,10 +106,10 @@ public class FavoriteContentProvider extends ContentProvider {
         switch (match) {
             case FAVORITE_WITH_ID:
                 String id = uri.getPathSegments().get(1);
-                favoritesDeleted = db.delete(TABLE_NAME, "_id=?", new String[]{id});
+                favoritesDeleted = db.delete(TABLE_NAME, SINGLE_DELETE_WHERECLAUSE, new String[]{id});
                 break;
             default:
-                throw new UnsupportedOperationException("Unknown uri: " + uri);
+                throw new UnsupportedOperationException(INSERT_EXCEPTION_MESSAGE + uri);
         }
 
         if (favoritesDeleted != 0) {
@@ -106,12 +122,12 @@ public class FavoriteContentProvider extends ContentProvider {
     @Override
     public int update(@NonNull Uri uri, ContentValues values, String selection,
                       String[] selectionArgs) {
-        throw new UnsupportedOperationException("This provider does not provide update operations.");
+        throw new UnsupportedOperationException(UPDATE_UNSUPPORTED_MESSAGE);
     }
 
     @Override
     public String getType(@NonNull Uri uri) {
-        throw new UnsupportedOperationException("This provider does not provide a type.");
+        throw new UnsupportedOperationException(TYPE_UNSUPPORTED_MESSAGE);
     }
 
 }

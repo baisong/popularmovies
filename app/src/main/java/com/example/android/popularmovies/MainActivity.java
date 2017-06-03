@@ -9,11 +9,11 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -23,27 +23,25 @@ import com.example.android.popularmovies.tools.TMDBUtils;
 
 import org.json.JSONObject;
 
-import java.net.URL;
-
 public class MainActivity extends AppCompatActivity implements MovieAdapterOnClickHandler {
 
     private static final int MAIN_VIEW_GRID_COLUMNS = 2;
-    private static final String LOG_TAG = MainActivity.class.getSimpleName();
+    private static final String LOG_TAG = "PopularMovies Main";
+    public  static final String EXTRA_VIEW_MODE = "viewmode";
     private RecyclerView mRecyclerView;
     private MovieAdapter mMovieAdapter;
     private TextView mErrorMessageDisplay;
+    private LinearLayout mEmptyFavorites;
     private ProgressBar mLoadingIndicator;
     private TextView mActiveSort;
 
-    /**
-     * Initializes the main activity and loads movies.
-     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         mErrorMessageDisplay = (TextView) findViewById(R.id.tv_error_message_display);
+        mEmptyFavorites = (LinearLayout) findViewById(R.id.ll_empty_favorites);
         mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_loading_indicator);
         mActiveSort = (TextView) findViewById(R.id.tv_active_sort);
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_grid);
@@ -57,27 +55,19 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
         loadMovieData(getSort(this));
     }
 
-    /**
-     * Executes the FetchMovieTask
-     */
     private void loadMovieData(int sortMethod) {
         showMovieGrid();
         new FetchMoviesTask().execute(sortMethod);
     }
 
-    /**
-     * Launches an explicit intent when a movie tile is clicked.
-     */
     @Override
     public void onClick(JSONObject movieData) {
-        Intent launchDetailIntent = new Intent(this, DetailActivity.class);
+        Intent launchDetailIntent = new Intent(this, MovieDetailActivity.class);
         launchDetailIntent.putExtra(Intent.EXTRA_TEXT, movieData.toString());
+        launchDetailIntent.putExtra(EXTRA_VIEW_MODE, getSort(this));
         startActivity(launchDetailIntent);
     }
 
-    /**
-     * Toggles the movie results on, and error message off.
-     */
     private void showMovieGrid() {
         mErrorMessageDisplay.setVisibility(View.INVISIBLE);
         mRecyclerView.setVisibility(View.VISIBLE);
@@ -85,18 +75,12 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
         mActiveSort.setVisibility(View.VISIBLE);
     }
 
-    /**
-     * Toggles the error message on, and movie results off.
-     */
     private void showErrorMessage() {
         mRecyclerView.setVisibility(View.INVISIBLE);
         mActiveSort.setVisibility(View.INVISIBLE);
         mErrorMessageDisplay.setVisibility(View.VISIBLE);
     }
 
-    /**
-     * Updates the TextView to display the active sort method.
-     */
     private void updateSort() {
         String[] labels = {
                 getString(R.string.active_popular),
@@ -104,15 +88,14 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
                 getString(R.string.active_favorites)
         };
         int sort = getSort(this);
-        if (sort == 0 || sort == 1) {
+        if (sort == 0 || sort == 1 || sort == 2) {
             mActiveSort.setText(labels[sort]);
         }
     }
 
-    /**
-     * Fetches a MovieShelf in the background.
-     */
     public class FetchMoviesTask extends AsyncTask<Integer, Void, MovieShelf> {
+
+        private int mViewMode;
 
         @Override
         protected void onPreExecute() {
@@ -122,15 +105,15 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
 
         @Override
         protected MovieShelf doInBackground(Integer... params) {
-            URL movieQueryUrl = TMDBUtils.buildUrl(params[0]);
-            Log.d("Popular_Movies_URL", movieQueryUrl.toString());
-            try {
-                String json = TMDBUtils.getResponseFromHttpUrl(movieQueryUrl);
-                MovieShelf shelf = TMDBUtils.getMovieTitlesFromJson(json);
-                return shelf;
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
+            mViewMode = params[0];
+            switch (mViewMode) {
+                case TMDBUtils.MODE_LIST_FAVORITES:
+                    return TMDBUtils.buildFavoritesShelf(getApplicationContext());
+                case TMDBUtils.MODE_SORT_POPULAR:
+                case TMDBUtils.MODE_SORT_TOP_RATED:
+                    return TMDBUtils.buildSortedShelf(mViewMode);
+                default:
+                    throw new UnsupportedOperationException();
             }
         }
 
@@ -138,6 +121,12 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
         protected void onPostExecute(MovieShelf shelf) {
             mLoadingIndicator.setVisibility(View.INVISIBLE);
             if (shelf != null) {
+                if (mViewMode == TMDBUtils.MODE_LIST_FAVORITES && shelf.getCount() == 0) {
+                    mEmptyFavorites.setVisibility(View.VISIBLE);
+                }
+                else {
+                    mEmptyFavorites.setVisibility(View.GONE);
+                }
                 showMovieGrid();
                 mMovieAdapter.setMovieData(shelf);
             } else {
@@ -146,9 +135,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
         }
     }
 
-    /**
-     * Inflates the main menu.
-     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -156,24 +142,22 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
         return true;
     }
 
-    /**
-     * Responds to menu item selection.
-     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
         if (id == R.id.action_sort_popular) {
-            setSort(TMDBUtils.SORT_POPULAR, this);
-            loadMovieData(TMDBUtils.SORT_POPULAR);
+            updateViewMode(TMDBUtils.MODE_SORT_POPULAR);
             return true;
         }
         if (id == R.id.action_sort_top_rated) {
-            setSort(TMDBUtils.SORT_TOP_RATED, this);
-            loadMovieData(TMDBUtils.SORT_TOP_RATED);
+            updateViewMode(TMDBUtils.MODE_SORT_TOP_RATED);
             return true;
         }
-
+        if (id == R.id.action_list_favorites) {
+            updateViewMode(TMDBUtils.MODE_LIST_FAVORITES);
+            return true;
+        }
         if (id == R.id.action_reload) {
             loadMovieData(getSort(this));
             return true;
@@ -182,9 +166,19 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * Sets the active sort method using SharedPreferences.
-     */
+    public void viewMostPopular(View view) {
+        updateViewMode(TMDBUtils.MODE_SORT_POPULAR);
+    }
+
+    public void viewTopRated(View view) {
+        updateViewMode(TMDBUtils.MODE_SORT_TOP_RATED);
+    }
+
+    private void updateViewMode(int viewMode) {
+        setSort(viewMode, this);
+        loadMovieData(viewMode);
+    }
+
     private void setSort(int newSort, Activity activity) {
         SharedPreferences sharedPref = activity.getPreferences(Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
@@ -192,13 +186,10 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
         editor.commit();
     }
 
-    /**
-     * Gets the active sort method using SharedPreferences.
-     */
     private int getSort(Activity activity) {
         SharedPreferences sharedPref = activity.getPreferences(Context.MODE_PRIVATE);
         // After all, the app is named "Popular Movies"
-        int defaultSort = TMDBUtils.SORT_POPULAR;
+        int defaultSort = TMDBUtils.MODE_SORT_POPULAR;
         return sharedPref.getInt(getString(R.string.pref_active_sort), defaultSort);
     }
 }
